@@ -19,7 +19,7 @@ import {
   VercelDevCommand,
   VercelEnvCommand,
   VercelDomainsCommand,
-  SlackLoginCommand,
+  SlackServiceLoginCommand,
   VercelServiceLoginCommand,
   SupabaseLoginCommand,
   GhLoginCommand,
@@ -34,6 +34,12 @@ import {
   GhIssueCommand,
   GhPrCommand,
   GhGistCommand,
+  SlackLoginCommand,
+  SlackCreateCommand,
+  SlackRunCommand,
+  SlackDeployCommand,
+  SlackEnvCommand,
+  SlackDoctorCommand,
 } from './commands';
 
 const program = new Command();
@@ -64,7 +70,7 @@ const commands = [
   new VercelEnvCommand(),
   new VercelDomainsCommand(),
   // Service login commands
-  new SlackLoginCommand(),
+  new SlackServiceLoginCommand(),
   new VercelServiceLoginCommand(),
   new SupabaseLoginCommand(),
   new GhLoginCommand(),
@@ -80,6 +86,13 @@ const commands = [
   new GhIssueCommand(),
   new GhPrCommand(),
   new GhGistCommand(),
+  // Slack CLI commands
+  new SlackLoginCommand(),
+  new SlackCreateCommand(),
+  new SlackRunCommand(),
+  new SlackDeployCommand(),
+  new SlackEnvCommand(),
+  new SlackDoctorCommand(),
 ];
 
 commands.forEach((command) => command.register(program));

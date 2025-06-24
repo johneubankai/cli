@@ -19,3 +19,6 @@ export * from './vercel';
 
 // GitHub CLI integration commands
 export * from './gh';
+
+// Slack CLI integration commands
+export * from './slack';

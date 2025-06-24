@@ -3,7 +3,7 @@ export { LogoutCommand } from './logout';
 export { StatusCommand } from './status';
 export {
   ServiceLoginCommand,
-  SlackLoginCommand,
+  SlackLoginCommand as SlackServiceLoginCommand,
   VercelServiceLoginCommand,
   SupabaseLoginCommand,
   GhLoginCommand,
