@@ -89,6 +89,24 @@ All GitHub commands use the `gh` CLI tool under the hood. Make sure you have [Gi
 - `jx gh gist edit <id>` - Edit a gist
 - `jx gh gist delete <id>` - Delete a gist
 
+### Supabase Integration
+
+All Supabase commands use the `sb` prefix and require a `SUPABASE_PAT` (Personal Access Token) in your `.env` file.
+
+#### Project Management
+- `jx sb link <project-ref>` - Link to a Supabase project
+- `jx sb db push` - Push database migrations
+- `jx sb functions list` - List edge functions
+- `jx sb functions deploy <name>` - Deploy a specific edge function
+- `jx sb functions deploy --all` - Deploy all edge functions
+
+#### Vault Management
+- `jx vault list` - List all secrets
+- `jx vault get <key>` - Get a secret value
+- `jx vault get <key> --reveal` - Show the actual secret value
+- `jx vault set <key> [value]` - Set or update a secret
+- `jx vault rm <key>` - Remove a secret
+
 ## Development
 
 ```bash

@@ -56,6 +56,13 @@ import {
   VaultGetCommand,
   VaultSetCommand,
   VaultRemoveCommand,
+  SbCommand,
+  SbLinkCommand,
+  SbDbCommand,
+  SbDbPushCommand,
+  SbFunctionsCommand,
+  SbFunctionsListCommand,
+  SbFunctionsDeployCommand,
 } from './commands';
 
 const program = new Command();
@@ -132,6 +139,14 @@ const commands = [
   new VaultGetCommand(),
   new VaultSetCommand(),
   new VaultRemoveCommand(),
+  // Supabase commands
+  new SbCommand(),
+  new SbLinkCommand(),
+  new SbDbCommand(),
+  new SbDbPushCommand(),
+  new SbFunctionsCommand(),
+  new SbFunctionsListCommand(),
+  new SbFunctionsDeployCommand(),
 ];
 
 commands.forEach((command) => command.register(program));

@@ -17,6 +17,9 @@ export * from './slack';
 // Fly.io integration commands
 export * from './fly';
 
+// Supabase commands
+export * from './sb';
+
 // AI assistant commands
 export { CodexCommand } from './codex';
 export { ClaudeCommand } from './claude';
