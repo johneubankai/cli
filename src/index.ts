@@ -54,6 +54,8 @@ import {
   CheckFunctionsCommand,
   VaultListCommand,
   VaultGetCommand,
+  VaultSetCommand,
+  VaultRemoveCommand,
 } from './commands';
 
 const program = new Command();
@@ -128,6 +130,8 @@ const commands = [
   // Vault commands
   new VaultListCommand(),
   new VaultGetCommand(),
+  new VaultSetCommand(),
+  new VaultRemoveCommand(),
 ];
 
 commands.forEach((command) => command.register(program));

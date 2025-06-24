@@ -4,6 +4,10 @@ export interface ServiceAuth {
   userId?: string;
   expiresAt?: string;
   refreshToken?: string;
+  // Supabase-specific fields
+  projectUrl?: string;
+  anonKey?: string;
+  projectRef?: string;
 }
 
 export interface ServiceConfig {

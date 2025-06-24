@@ -1,10 +1,13 @@
 import { Command } from 'commander';
 import { SubCommand } from '../subcommand';
-import { execSync, spawn } from 'child_process';
+import { VaultService } from '../../services/vault';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 interface VaultListOptions {
   projectRef?: string;
-  linked?: boolean;
   format?: 'table' | 'json';
 }
 
@@ -13,74 +16,56 @@ export class VaultListCommand extends SubCommand {
   name = 'list';
   description = 'List all secret keys from Supabase Vault';
 
-  /**
-   * Check if Supabase CLI is installed
-   */
-  private checkSupabaseInstalled(): boolean {
-    try {
-      execSync('supabase --version', { stdio: 'ignore' });
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Execute a Supabase CLI command
-   */
-  private async executeSupabaseCommand(args: string[]): Promise<void> {
-    if (!this.checkSupabaseInstalled()) {
-      this.logger.error('Supabase CLI is not installed. Please install it from https://supabase.com/docs/guides/cli');
-      process.exit(1);
-    }
-
-    return new Promise((resolve, reject) => {
-      const supabase = spawn('supabase', args, {
-        stdio: 'inherit',
-        shell: true
-      });
-
-      supabase.on('close', (code) => {
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`Supabase CLI exited with code ${code}`));
-        }
-      });
-
-      supabase.on('error', (err) => {
-        reject(err);
-      });
-    });
-  }
-
   protected configureOptions(command: Command): void {
     command
       .option('--project-ref <projectRef>', 'Project reference ID')
-      .option('--linked', 'Use linked project')
       .option('--format <format>', 'Output format (table, json)', 'table');
   }
 
   async execute(options: VaultListOptions): Promise<void> {
+    const spinner = this.logger.spinner('Listing secrets...');
+
     try {
-      const args = ['secrets', 'list'];
-
-      // Add options
-      if (options.projectRef) {
-        args.push('--project-ref', options.projectRef);
+      // Get Supabase configuration
+      const supabaseConfig = await this.config.getSupabaseConfig();
+      const projectRef = options.projectRef || supabaseConfig.projectRef;
+      
+      if (!supabaseConfig.projectUrl || !supabaseConfig.anonKey) {
+        spinner.fail('Supabase configuration missing');
+        this.logger.error('Please set SUPABASE_PROJECT_REF and SUPABASE_ANON_KEY in your .env file');
+        this.logger.info('Or configure using: jx supabase login');
+        process.exit(1);
       }
-      if (options.linked) {
-        args.push('--linked');
+
+      // Create vault service instance
+      const vaultService = new VaultService({
+        projectUrl: supabaseConfig.projectUrl,
+        anonKey: supabaseConfig.anonKey,
+        projectRef
+      });
+
+      // List secrets
+      const secrets = await vaultService.listSecrets();
+      
+      spinner.succeed('Secrets retrieved');
+
+      if (secrets.length === 0) {
+        this.logger.info('No secrets found in vault');
+        return;
       }
 
-      // Execute the command
-      this.logger.info('Listing Supabase Vault secrets...');
-      await this.executeSupabaseCommand(args);
+      if (options.format === 'json') {
+        this.logger.log(JSON.stringify(secrets, null, 2));
+      } else {
+        this.logger.info(`\nFound ${secrets.length} secret(s):\n`);
+        secrets.forEach(secret => {
+          this.logger.log(`  • ${secret.name}`);
+        });
+      }
 
     } catch (error: unknown) {
-      this.logger.error(`Failed to list vault secrets: ${error instanceof Error ? error.message : String(error)}`);
-      this.logger.info('Note: Make sure you are logged in and have access to the project');
-      this.logger.info('Run "supabase login" if needed');
+      spinner.fail('Failed to list secrets');
+      this.logger.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
       process.exit(1);
     }
   }

@@ -2,38 +2,57 @@ import { Command } from 'commander';
 import { SubCommand } from '../subcommand';
 import { VaultService } from '../../services/vault';
 import * as dotenv from 'dotenv';
+import inquirer from 'inquirer';
 
 // Load environment variables
 dotenv.config();
 
-interface VaultGetOptions {
+interface VaultRemoveOptions {
   projectRef?: string;
-  reveal?: boolean;
+  yes?: boolean;
 }
 
-export class VaultGetCommand extends SubCommand {
+export class VaultRemoveCommand extends SubCommand {
   parentCommand = 'vault';
-  name = 'get';
-  description = 'Get a specific secret from Supabase Vault';
+  name = 'rm';
+  description = 'Remove a secret from Supabase Vault';
+  aliases = ['remove'];
 
   protected configureOptions(command: Command): void {
     command
-      .argument('<key>', 'Secret key name to retrieve')
+      .argument('<key>', 'Secret key name to remove')
       .option('--project-ref <projectRef>', 'Project reference ID')
-      .option('--reveal', 'Show the actual secret value (use with caution)');
+      .option('-y, --yes', 'Skip confirmation');
   }
 
-  async execute(options: VaultGetOptions, command?: Command): Promise<void> {
+  async execute(options: VaultRemoveOptions, command?: Command): Promise<void> {
     try {
       const key = command?.args?.[0];
       
       if (!key) {
         this.logger.error('Secret key is required');
-        this.logger.info('Usage: jx vault get <key> [options]');
+        this.logger.info('Usage: jx vault rm <key> [options]');
         process.exit(1);
       }
 
-      const spinner = this.logger.spinner('Retrieving secret...');
+      // Confirm removal unless --yes flag is provided
+      if (!options.yes) {
+        const answers = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirm',
+            message: `Are you sure you want to remove the secret "${key}"?`,
+            default: false
+          }
+        ]);
+        
+        if (!answers.confirm) {
+          this.logger.info('Removal cancelled');
+          return;
+        }
+      }
+
+      const spinner = this.logger.spinner('Removing secret...');
 
       try {
         // Get Supabase configuration
@@ -54,24 +73,18 @@ export class VaultGetCommand extends SubCommand {
           projectRef
         });
 
-        // Get the secret
-        const secret = await vaultService.getSecret(key, options.reveal || false);
+        // Remove the secret
+        await vaultService.removeSecret(key);
         
-        spinner.succeed(`Secret retrieved: ${key}`);
-        
-        if (options.reveal && secret.value) {
-          this.logger.info(`Value: ${secret.value}`);
-        } else {
-          this.logger.info('Value: ******** (use --reveal to show)');
-        }
+        spinner.succeed(`Secret "${key}" has been removed`);
 
       } catch (error) {
-        spinner.fail('Failed to retrieve secret');
+        spinner.fail('Failed to remove secret');
         throw error;
       }
 
     } catch (error: unknown) {
-      this.logger.error(`Failed to get vault secret: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(`Failed to remove vault secret: ${error instanceof Error ? error.message : String(error)}`);
       process.exit(1);
     }
   }

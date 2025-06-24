@@ -98,4 +98,31 @@ export class ConfigManager {
     delete config.services;
     await this.setGlobalConfig(config);
   }
+
+  static async getSupabaseConfig(): Promise<{ projectUrl?: string; anonKey?: string; projectRef?: string }> {
+    const config = await this.getGlobalConfig();
+    const supabaseAuth = config.services?.supabase;
+    
+    // Check environment variables first
+    const projectRef = process.env.SUPABASE_PROJECT_REF || process.env.SUPABASE_REF || supabaseAuth?.projectRef;
+    const anonKey = process.env.SUPABASE_ANON_KEY || supabaseAuth?.anonKey;
+    const projectUrl = process.env.SUPABASE_URL || supabaseAuth?.projectUrl || 
+      (projectRef ? `https://${projectRef}.supabase.co` : undefined);
+    
+    return { projectUrl, anonKey, projectRef };
+  }
+
+  static async setSupabaseConfig(projectUrl: string, anonKey: string, projectRef?: string): Promise<void> {
+    const config = await this.getGlobalConfig();
+    if (!config.services) {
+      config.services = {};
+    }
+    config.services.supabase = {
+      ...config.services.supabase,
+      projectUrl,
+      anonKey,
+      projectRef
+    };
+    await this.setGlobalConfig(config);
+  }
 }

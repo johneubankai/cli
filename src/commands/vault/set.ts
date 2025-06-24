@@ -2,38 +2,52 @@ import { Command } from 'commander';
 import { SubCommand } from '../subcommand';
 import { VaultService } from '../../services/vault';
 import * as dotenv from 'dotenv';
+import inquirer from 'inquirer';
 
 // Load environment variables
 dotenv.config();
 
-interface VaultGetOptions {
+interface VaultSetOptions {
   projectRef?: string;
-  reveal?: boolean;
 }
 
-export class VaultGetCommand extends SubCommand {
+export class VaultSetCommand extends SubCommand {
   parentCommand = 'vault';
-  name = 'get';
-  description = 'Get a specific secret from Supabase Vault';
+  name = 'set';
+  description = 'Add or update a secret in Supabase Vault';
 
   protected configureOptions(command: Command): void {
     command
-      .argument('<key>', 'Secret key name to retrieve')
-      .option('--project-ref <projectRef>', 'Project reference ID')
-      .option('--reveal', 'Show the actual secret value (use with caution)');
+      .argument('<key>', 'Secret key name')
+      .argument('[value]', 'Secret value (will prompt if not provided)')
+      .option('--project-ref <projectRef>', 'Project reference ID');
   }
 
-  async execute(options: VaultGetOptions, command?: Command): Promise<void> {
+  async execute(options: VaultSetOptions, command?: Command): Promise<void> {
     try {
       const key = command?.args?.[0];
+      let value = command?.args?.[1];
       
       if (!key) {
         this.logger.error('Secret key is required');
-        this.logger.info('Usage: jx vault get <key> [options]');
+        this.logger.info('Usage: jx vault set <key> [value] [options]');
         process.exit(1);
       }
 
-      const spinner = this.logger.spinner('Retrieving secret...');
+      // If value not provided, prompt for it
+      if (!value) {
+        const answers = await inquirer.prompt([
+          {
+            type: 'password',
+            name: 'value',
+            message: 'Enter secret value:',
+            validate: (input: string) => input.length > 0 || 'Value is required'
+          }
+        ]);
+        value = answers.value;
+      }
+
+      const spinner = this.logger.spinner('Setting secret...');
 
       try {
         // Get Supabase configuration
@@ -54,24 +68,18 @@ export class VaultGetCommand extends SubCommand {
           projectRef
         });
 
-        // Get the secret
-        const secret = await vaultService.getSecret(key, options.reveal || false);
+        // Set the secret
+        await vaultService.setSecret(key, value!);
         
-        spinner.succeed(`Secret retrieved: ${key}`);
-        
-        if (options.reveal && secret.value) {
-          this.logger.info(`Value: ${secret.value}`);
-        } else {
-          this.logger.info('Value: ******** (use --reveal to show)');
-        }
+        spinner.succeed(`Secret "${key}" has been set successfully`);
 
       } catch (error) {
-        spinner.fail('Failed to retrieve secret');
+        spinner.fail('Failed to set secret');
         throw error;
       }
 
     } catch (error: unknown) {
-      this.logger.error(`Failed to get vault secret: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(`Failed to set vault secret: ${error instanceof Error ? error.message : String(error)}`);
       process.exit(1);
     }
   }
