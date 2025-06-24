@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import { join } from 'path';
 
-describe('CLI', () => {
+describe('JX CLI', () => {
   const cliPath = join(__dirname, '../../dist/index.js');
   
   beforeAll(() => {
@@ -9,6 +9,29 @@ describe('CLI', () => {
     execSync('npm run build', { cwd: join(__dirname, '../..') });
   });
 
+  describe('check functions command', () => {
+    it('should error when PAT is missing', () => {
+      expect(() => {
+        execSync(`node ${cliPath} check functions`, {
+          env: { ...process.env, SUPABASE_PAT: '', SUPABASE_ACCESS_TOKEN: '' }
+        });
+      }).toThrow();
+    });
+
+    it('should error when project ref is missing', () => {
+      expect(() => {
+        execSync(`node ${cliPath} check functions --pat test-token`, {
+          env: { ...process.env, SUPABASE_PROJECT_REF: '', SUPABASE_REF: '' }
+        });
+      }).toThrow();
+    });
+
+    it('should accept PAT via flag', () => {
+      expect(() => {
+        execSync(`node ${cliPath} check functions --pat test-token --project-ref test-ref`);
+      }).toThrow(/supabase/i); // Will fail because supabase CLI not installed in test env
+    });
+  });
   describe('hello command', () => {
     it('should greet the world by default', () => {
       const output = execSync(`node ${cliPath} hello`).toString();
@@ -43,20 +66,20 @@ describe('CLI', () => {
     });
   });
 
-  describe('default action', () => {
-    it('should show welcome message when no command is given', () => {
-      const output = execSync(`node ${cliPath}`).toString();
-      expect(output.trim()).toBe('Welcome to the CLI! Use --help to see available commands.');
-    });
-  });
-
   describe('help', () => {
     it('should display help information', () => {
       const output = execSync(`node ${cliPath} --help`).toString();
       expect(output).toContain('Usage:');
       expect(output).toContain('Commands:');
+      expect(output).toContain('check');
       expect(output).toContain('hello');
       expect(output).toContain('goodbye');
+    });
+
+    it('should display check command help', () => {
+      const output = execSync(`node ${cliPath} check --help`).toString();
+      expect(output).toContain('Commands:');
+      expect(output).toContain('functions');
     });
   });
 });

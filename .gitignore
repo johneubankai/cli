@@ -33,6 +33,9 @@ coverage/
 .env.local
 .env.*.local
 
+# Example file should be tracked
+!.env.example
+
 # Temporary files
 *.tmp
 *.temp

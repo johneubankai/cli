@@ -1,10 +1,10 @@
 {
-  "name": "cli",
+  "name": "@johneubankai/jx-cli",
   "version": "1.0.0",
-  "description": "A hello world CLI built with Commander.js and TypeScript",
+  "description": "JX CLI - Super-charged helpers for development projects",
   "main": "dist/index.js",
   "bin": {
-    "cli": "./dist/index.js"
+    "jx": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -18,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "execa": "^5.1.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
