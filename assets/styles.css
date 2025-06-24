@@ -1,0 +1,28 @@
+/* Example CSS for future web UI integration */
+:root {
+  --primary-color: #0070f3;
+  --success-color: #0cce6b;
+  --error-color: #ff4545;
+  --warning-color: #ffa400;
+  --info-color: #0070f3;
+  --background: #ffffff;
+  --foreground: #000000;
+  --muted: #666666;
+  --border: #eaeaea;
+}
+
+.cli-output {
+  font-family: 'SF Mono', Monaco, 'Cascadia Mono', 'Roboto Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--foreground);
+  background: var(--background);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.status-ready { color: var(--success-color); }
+.status-error { color: var(--error-color); }
+.status-building { color: var(--warning-color); }
+.status-queued { color: var(--muted); }

@@ -1,117 +1,111 @@
 # JX CLI
 
-A TypeScript-based CLI tool with super-charged helpers for development projects, including Supabase Edge Functions management.
-
-## Features
-
-- **Supabase Vault Integration**: Securely list and retrieve secrets from Supabase Vault
-- **Supabase Functions Management**: Check and list deployed Edge Functions
-- **Security First**: Vault secrets are masked by default and copied to clipboard
-- **TypeScript**: Fully typed with strict configuration
-- **Commander.js**: Elegant command parsing with nested sub-commands
-- **ESLint**: Code quality enforcement
-- **Jest**: Comprehensive testing
-- **Global Installation**: Use `jx` command from anywhere
+A TypeScript CLI tool that mimics Vercel CLI commands. Built with clean typing and designed to work offline for build, lint, and test operations.
 
 ## Installation
 
-### For Development
+```bash
+npm install -g jx-cli
+```
+
+Or run locally:
 
 ```bash
 npm install
 npm run build
-```
-
-### Global Installation
-
-```bash
-# From the project directory
-npm install -g .
-
-# Or via npm package (when published)
-npm install -g @johneubankai/jx-cli
+npm link
 ```
 
 ## Commands
 
-### Supabase Vault Management
+### Authentication
 
-List all available keys in your Supabase vault:
+- `jx login` - Log in to your JX account
+- `jx logout` - Log out of your JX account
 
-```bash
-# Using environment variables
-export SUPABASE_ANON_KEY="your-anon-key"
-export SUPABASE_PROJECT_REF="your-project-ref"
-jx vault list
+### Project Management
 
-# Using command flags
-jx vault list --anon-key "your-key" --project-ref "your-ref"
-```
+- `jx link` - Link a project to your JX account
+- `jx deploy` - Deploy your project
+- `jx dev` - Start a local development server
+- `jx build` - Build your project
 
-Get a specific secret value (masked by default for security):
+### Environment Variables
+- `jx env` - List environment variables
+- `jx add <key> <value>` - Add an environment variable
+- `jx rm <key>` - Remove an environment variable
+- `jx pull` - Pull environment variables to a local file
 
-```bash
-# Get masked value (copied to clipboard automatically)
-jx vault get API_KEY
+### Deployment Management
 
-# Show full value (use with caution!)
-jx vault get API_KEY --show
-```
+- `jx ls` - List deployments
+- `jx logs <deployment-url>` - View deployment logs
 
-### Supabase Functions
+### GitHub CLI Integration
 
-Check deployed Edge Functions:
+All GitHub commands use the `gh` CLI tool under the hood. Make sure you have [GitHub CLI](https://cli.github.com/) installed.
 
-```bash
-# Using environment variables
-export SUPABASE_PAT="your-personal-access-token"
-export SUPABASE_PROJECT_REF="your-project-ref"
-jx check functions
+#### Authentication
+- `jx gh auth login` - Authenticate with GitHub
+- `jx gh auth logout` - Log out from GitHub
+- `jx gh auth status` - View authentication status
+- `jx gh auth refresh` - Refresh authentication
+- `jx gh auth token` - Print the auth token
 
-# Using command flags
-jx check functions --pat "your-token" --project-ref "your-ref"
-```
+#### Configuration
+- `jx gh config` - View GitHub CLI configuration
+- `jx gh config get <key>` - Get a specific config value
+- `jx gh config set <key> <value>` - Set a config value
+- `jx gh config list` - List all configuration
 
-### Other Commands
+#### Repository Management
+- `jx gh repo create [name]` - Create a new repository
+- `jx gh repo clone <repo>` - Clone a repository
+- `jx gh repo list` - List repositories
+- `jx gh repo view [repo]` - View repository details
+- `jx gh repo delete <repo>` - Delete a repository
+- `jx gh repo fork <repo>` - Fork a repository
 
-```bash
-# Say hello
-jx hello
-jx hello --name John
-jx hello --uppercase
-jx hello --exclamation
+#### Issue Tracking
+- `jx gh issue create` - Create a new issue
+- `jx gh issue list` - List issues
+- `jx gh issue view <number>` - View an issue
+- `jx gh issue close <number>` - Close an issue
+- `jx gh issue reopen <number>` - Reopen an issue
+- `jx gh issue edit <number>` - Edit an issue
 
-# Say goodbye
-jx goodbye
-jx goodbye --name Alice
+#### Pull Requests
+- `jx gh pr create` - Create a pull request
+- `jx gh pr list` - List pull requests
+- `jx gh pr view <number>` - View a pull request
+- `jx gh pr merge <number>` - Merge a pull request
+- `jx gh pr close <number>` - Close a pull request
+- `jx gh pr checkout <number>` - Check out a pull request
 
-# Show help
-jx --help
-jx check --help
-```
-
-## Environment Variables
-
-For Supabase integration:
-
-- `SUPABASE_PAT` or `SUPABASE_ACCESS_TOKEN`: Your Supabase personal access token (for CLI operations)
-- `SUPABASE_PROJECT_REF` or `SUPABASE_REF`: Your Supabase project reference
-- `SUPABASE_ANON_KEY`: Your Supabase anon key (for vault operations)
+#### Gist Management
+- `jx gh gist create` - Create a new gist
+- `jx gh gist list` - List your gists
+- `jx gh gist view <id>` - View a gist
+- `jx gh gist edit <id>` - Edit a gist
+- `jx gh gist delete <id>` - Delete a gist
 
 ## Development
 
 ```bash
+# Install dependencies
+npm install
+
 # Run in development mode
 npm run dev
 
 # Build the project
 npm run build
 
+# Run linting
+npm run lint
+
 # Run tests
 npm run test
-
-# Lint the code
-npm run lint
 ```
 
 ## Project Structure
@@ -119,34 +113,33 @@ npm run lint
 ```
 jx-cli/
 ├── src/
-│   ├── index.ts          # Main CLI entry point
-│   └── __tests__/        # Test files
-│       └── index.test.ts
-├── dist/                 # Compiled JavaScript (generated)
+│   ├── commands/     # Command implementations
+│   ├── types/        # TypeScript type definitions
+│   ├── utils/        # Utility functions
+│   └── index.ts      # CLI entry point
+├── dist/            # Compiled output
 ├── package.json
-├── tsconfig.json         # TypeScript configuration
-├── .eslintrc.json        # ESLint configuration
-├── jest.config.js        # Jest configuration
+├── tsconfig.json
 └── README.md
 ```
 
-## Publishing
+## Configuration
 
-To publish this package:
+### Global Configuration
 
-```bash
-npm run build
-npm publish --access public
-```
+Stored in `~/.jx/config.json`:
+- Authentication token
+- Default team
+- Analytics preferences
 
-## Security Notes
+### Project Configuration
 
-- Never commit your Supabase PAT to version control
-- Use environment variables or secure secret management for credentials
-- In CI/CD, store tokens as encrypted secrets
+Stored in `jx.json` in your project root:
+- Project ID
+- Build settings
+- Framework detection
+- Output directory
 
-## Requirements
+## License
 
-- Node.js 18+
-- Supabase CLI installed globally (`npm install -g supabase`)
-- Valid Supabase project and personal access token
+MIT

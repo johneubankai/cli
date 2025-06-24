@@ -1,55 +1,44 @@
 {
-  "name": "@johneubankai/jx-cli",
-  "version": "2.1.0",
-  "description": "JX CLI - Super-charged helpers for development projects",
-  "main": "dist/index.js",
+  "name": "jx-cli",
+  "version": "1.0.0",
+  "description": "A CLI tool that mimics Vercel CLI commands",
+  "main": "./dist/index.js",
   "bin": {
     "jx": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node src/index.ts",
-    "start": "node dist/index.js",
-    "lint": "eslint . --ext .ts,.tsx",
-    "test": "jest",
-    "prepare": "npm run build",
-    "deploy-vault-secrets-writer": "cd .. && jx supabase function deploy --name=vault-secrets-writer",
-    "deploy-vault-secrets-deleter": "cd .. && jx supabase function deploy --name=vault-secrets-deleter"
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint src --ext .ts",
+    "test": "jest --passWithNoTests",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "cli",
-    "commander",
-    "supabase",
-    "edge-functions",
-    "developer-tools"
+    "vercel",
+    "deployment"
   ],
-  "author": "John Eubank <johneubankai@gmail.com>",
+  "author": "",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/johneubankai/cli.git"
-  },
-  "bugs": {
-    "url": "https://github.com/johneubankai/cli/issues"
-  },
-  "homepage": "https://github.com/johneubankai/cli#readme",
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "dependencies": {
-    "commander": "^12.1.0",
-    "execa": "^5.1.1"
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.5",
+    "inquirer": "^9.2.15",
+    "ora": "^8.0.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/node": "^20.14.9",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
-    "@typescript-eslint/parser": "^7.14.1",
+    "@types/inquirer": "^9.0.7",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.11.24",
+    "@types/ora": "^3.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
-    "playwright": "^1.53.1",
-    "ts-jest": "^29.1.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "playwright": "^1.49.0",
+    "ts-jest": "^29.1.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
   }
 }
