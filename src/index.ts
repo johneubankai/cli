@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import { HelpFormatter } from './utils/helpFormatter';
 import {
   LoginCommand,
   LogoutCommand,
@@ -59,6 +60,12 @@ program
   .name('jx')
   .description('CLI tool that mimics Vercel CLI commands')
   .version('1.0.0');
+
+// Configure custom help
+const helpFormatter = new HelpFormatter();
+program.configureHelp({
+  formatHelp: (cmd) => helpFormatter.formatHelp(cmd)
+});
 
 // Register all commands
 const commands = [
