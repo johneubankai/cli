@@ -40,6 +40,11 @@ import {
   SlackDeployCommand,
   SlackEnvCommand,
   SlackDoctorCommand,
+  FlyLaunchCommand,
+  FlyDeployCommand,
+  FlyAppsCommand,
+  FlyLogsCommand,
+  FlySecretsCommand,
 } from './commands';
 
 const program = new Command();
@@ -93,6 +98,12 @@ const commands = [
   new SlackDeployCommand(),
   new SlackEnvCommand(),
   new SlackDoctorCommand(),
+  // Fly.io commands
+  new FlyLaunchCommand(),
+  new FlyDeployCommand(),
+  new FlyAppsCommand(),
+  new FlyLogsCommand(),
+  new FlySecretsCommand(),
 ];
 
 commands.forEach((command) => command.register(program));

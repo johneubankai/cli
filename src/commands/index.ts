@@ -22,3 +22,6 @@ export * from './gh';
 
 // Slack CLI integration commands
 export * from './slack';
+
+// Fly.io integration commands
+export * from './fly';
