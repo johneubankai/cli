@@ -36,3 +36,9 @@ export { MermaidChartCommand } from './mermaidchart';
 
 // Linear integration commands
 export * from './linear';
+
+// Check commands
+export * from './check';
+
+// Vault commands
+export * from './vault';

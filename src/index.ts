@@ -53,6 +53,9 @@ import {
   LinearCreateCommand,
   LinearListCommand,
   LinearViewCommand,
+  CheckFunctionsCommand,
+  VaultListCommand,
+  VaultGetCommand,
 } from './commands';
 
 const program = new Command();
@@ -123,6 +126,11 @@ const commands = [
   new LinearCreateCommand(),
   new LinearListCommand(),
   new LinearViewCommand(),
+  // Check commands
+  new CheckFunctionsCommand(),
+  // Vault commands
+  new VaultListCommand(),
+  new VaultGetCommand(),
 ];
 
 commands.forEach((command) => command.register(program));
