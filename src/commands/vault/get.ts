@@ -71,7 +71,7 @@ export class VaultGetCommand extends SubCommand {
 
       // Add options
       if (options.projectRef) {
-        args.push('--project-ref', options.projectRef);
+        args.push('--project-ref', options.projectRef as string);
       }
       if (options.linked) {
         args.push('--linked');

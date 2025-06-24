@@ -249,7 +249,7 @@ export class MermaidChartLoginCommand extends BaseCommand {
 }
 
 export class FlyioLoginCommand extends BaseCommand {
-  name = 'flyio';
+  name = 'fly';
   description = 'Login to Fly.io';
 
   protected configureOptions(command: Command): void {
