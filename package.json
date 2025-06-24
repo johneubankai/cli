@@ -1,0 +1,35 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "A hello world CLI built with Commander.js and TypeScript",
+  "main": "dist/index.js",
+  "bin": {
+    "cli": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "jest",
+    "prepare": "npm run build"
+  },
+  "keywords": ["cli", "commander"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "playwright": "^1.45.0",
+    "ts-jest": "^29.1.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}
