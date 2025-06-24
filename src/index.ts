@@ -45,6 +45,14 @@ import {
   FlyAppsCommand,
   FlyLogsCommand,
   FlySecretsCommand,
+  CodexCommand,
+  ClaudeCommand,
+  MermaidCommand,
+  MermaidChartCommand,
+  LinearInitCommand,
+  LinearCreateCommand,
+  LinearListCommand,
+  LinearViewCommand,
 } from './commands';
 
 const program = new Command();
@@ -104,6 +112,17 @@ const commands = [
   new FlyAppsCommand(),
   new FlyLogsCommand(),
   new FlySecretsCommand(),
+  // AI assistant commands
+  new CodexCommand(),
+  new ClaudeCommand(),
+  // Mermaid commands
+  new MermaidCommand(),
+  new MermaidChartCommand(),
+  // Linear commands
+  new LinearInitCommand(),
+  new LinearCreateCommand(),
+  new LinearListCommand(),
+  new LinearViewCommand(),
 ];
 
 commands.forEach((command) => command.register(program));

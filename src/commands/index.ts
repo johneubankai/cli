@@ -25,3 +25,14 @@ export * from './slack';
 
 // Fly.io integration commands
 export * from './fly';
+
+// AI assistant commands
+export { CodexCommand } from './codex';
+export { ClaudeCommand } from './claude';
+
+// Mermaid diagram commands
+export { MermaidCommand } from './mermaid';
+export { MermaidChartCommand } from './mermaidchart';
+
+// Linear integration commands
+export * from './linear';
