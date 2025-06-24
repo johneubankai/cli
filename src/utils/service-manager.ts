@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { ConfigManager } from './config';
-import { SUPPORTED_SERVICES, ServiceConfig, ServiceAuth } from '../types/services';
+import { SUPPORTED_SERVICES, ServiceConfig } from '../types/services';
 import { Logger } from './logger';
 
 export class ServiceManager {

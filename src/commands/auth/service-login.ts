@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import { BaseCommand } from '../base';
 import { ServiceManager } from '../../utils/service-manager';
 import { SUPPORTED_SERVICES } from '../../types/services';
-import { ConfigManager } from '../../utils/config';
 
 interface ServiceLoginOptions {
   all?: boolean;
@@ -82,7 +81,7 @@ export class ServiceLoginCommand extends BaseCommand {
     const statuses = await ServiceManager.getAllServiceStatuses();
     
     // Create choices with status indicators
-    const choices = SUPPORTED_SERVICES.map(service => {
+    const choices: any[] = SUPPORTED_SERVICES.map(service => {
       const isAuthenticated = statuses.get(service.name);
       const status = isAuthenticated ? chalk.green('✓') : chalk.gray('○');
       return {

@@ -31,7 +31,6 @@ export class DevCommand extends BaseCommand {
       this.logger.info(`Local: http://${options.host || 'localhost'}:${options.port || '3000'}`);
       
       // Spawn the dev process
-      const devCommand = localConfig.settings?.devCommand || 'npm run dev';
       const [cmd, ...args] = devCommand.split(' ');
       const child = spawn(cmd, args, {
         stdio: 'inherit',

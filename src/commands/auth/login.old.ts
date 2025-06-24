@@ -34,6 +34,9 @@ export class LoginCommand extends BaseCommand {
       }
 
       // In a real implementation, you would validate the token with an API
+      if (!token) {
+        throw new Error('Token is required');
+      }
       await this.config.setAuthToken(token);
 
       spinner.succeed('Successfully logged in!');
