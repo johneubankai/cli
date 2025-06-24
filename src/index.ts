@@ -13,13 +13,8 @@ import {
   VercelListCommand,
   VercelBuildCommand,
   SlackServiceLoginCommand,
-  VercelServiceLoginCommand,
   SupabaseLoginCommand,
-  GhLoginCommand,
-  MermaidChartLoginCommand,
   FlyioLoginCommand,
-  ClaudeLoginCommand,
-  CodexLoginCommand,
   LinearLoginCommand,
   GhAuthCommand,
   GhConfigCommand,
@@ -55,10 +50,7 @@ import {
   SbCommand,
   SbLinkCommand,
   SbDbCommand,
-  SbDbPushCommand,
   SbFunctionsCommand,
-  SbFunctionsListCommand,
-  SbFunctionsDeployCommand,
 } from './commands';
 
 const program = new Command();
@@ -83,13 +75,8 @@ const commands = [
   new VercelBuildCommand(),
   // Service login commands
   new SlackServiceLoginCommand(),
-  new VercelServiceLoginCommand(),
   new SupabaseLoginCommand(),
-  new GhLoginCommand(),
-  new MermaidChartLoginCommand(),
   new FlyioLoginCommand(),
-  new ClaudeLoginCommand(),
-  new CodexLoginCommand(),
   new LinearLoginCommand(),
   // GitHub CLI commands
   new GhAuthCommand(),
@@ -134,10 +121,7 @@ const commands = [
   new SbCommand(),
   new SbLinkCommand(),
   new SbDbCommand(),
-  new SbDbPushCommand(),
   new SbFunctionsCommand(),
-  new SbFunctionsListCommand(),
-  new SbFunctionsDeployCommand(),
 ];
 
 commands.forEach((command) => command.register(program));

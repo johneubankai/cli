@@ -14,8 +14,7 @@ export class GhGistCommand extends GitHubCommand {
       .option('-p, --public', 'Make the gist public')
       .option('-w, --web', 'Open the web browser')
       .option('-L, --limit <number>', 'Maximum number of gists to fetch')
-      .option('--secret', 'List only secret gists')
-      .option('--public', 'List only public gists');
+      .option('--secret', 'List only secret gists');
   }
 
   async execute(options: any, command?: Command): Promise<void> {
