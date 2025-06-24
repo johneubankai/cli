@@ -51,6 +51,27 @@ class JXCli {
       .command('vault')
       .description('Manage Supabase vault secrets');
 
+    // Setup supabase command with subcommands
+    const supabaseCommand = this.program
+      .command('supabase')
+      .description('Manage Supabase services');
+
+    // Add function subcommand to supabase
+    const functionCommand = supabaseCommand
+      .command('function')
+      .description('Manage Supabase Edge Functions');
+
+    // Add deploy subcommand to function
+    functionCommand
+      .command('deploy')
+      .description('Deploy a Supabase Edge Function')
+      .requiredOption('-n, --name <name>', 'Name of the function to deploy')
+      .option('-p, --project-ref <id>', 'Project reference (overrides $SUPABASE_PROJECT_REF)')
+      .option('--pat <token>', 'Personal access token (overrides $SUPABASE_PAT)')
+      .action(async (options: { name: string } & CheckFunctionsOptions) => {
+        await this.deploySupabaseFunction(options);
+      });
+
     // Add list subcommand to vault
     vaultCommand
       .command('list')
@@ -70,6 +91,28 @@ class JXCli {
       .option('-s, --show', 'Show the full value instead of masking it')
       .action(async (key: string, options: VaultOptions & { show?: boolean }) => {
         await this.getVaultSecret(key, options);
+      });
+
+    // Add new subcommand to vault
+    vaultCommand
+      .command('new')
+      .description('Create a new secret in the Supabase vault')
+      .requiredOption('-k, --key <key>', 'The key for the secret')
+      .requiredOption('-v, --value <value>', 'The value for the secret')
+      .option('-p, --project-ref <id>', 'Project reference (overrides $SUPABASE_PROJECT_REF)')
+      .option('-a, --anon-key <key>', 'Anon key (overrides $SUPABASE_ANON_KEY)')
+      .action(async (options: VaultOptions & { key: string; value: string }) => {
+        await this.createVaultSecret(options);
+      });
+
+    // Add delete subcommand to vault
+    vaultCommand
+      .command('delete <key>')
+      .description('Delete a secret from the Supabase vault')
+      .option('-p, --project-ref <id>', 'Project reference (overrides $SUPABASE_PROJECT_REF)')
+      .option('-a, --anon-key <key>', 'Anon key (overrides $SUPABASE_ANON_KEY)')
+      .action(async (key: string, options: VaultOptions) => {
+        await this.deleteVaultSecret(key, options);
       });
 
     // Add other commands for backwards compatibility
@@ -279,6 +322,194 @@ class JXCli {
     } catch (err) {
       const error = err as Error;
       console.error('❌ Failed to get vault secret:', error.message);
+      process.exit(1);
+    }
+  }
+
+  private async createVaultSecret(options: VaultOptions & { key: string; value: string }): Promise<void> {
+    const projectRef = 
+      options.projectRef || process.env.SUPABASE_PROJECT_REF || process.env.SUPABASE_REF;
+    const anonKey = 
+      options.anonKey || process.env.SUPABASE_ANON_KEY;
+
+    if (!projectRef) {
+      console.error('Error: project ref missing (set $SUPABASE_PROJECT_REF or pass --project-ref)');
+      process.exit(1);
+    }
+    if (!anonKey) {
+      console.error('Error: anon key missing (set $SUPABASE_ANON_KEY or pass --anon-key)');
+      process.exit(1);
+    }
+
+    try {
+      console.log(`🔐 Creating secret with key: ${options.key}\n`);
+      
+      const url = `https://${projectRef}.supabase.co/functions/v1/vault-secrets-writer`;
+      const body = JSON.stringify({ 
+        action: 'create',
+        key: options.key,
+        value: options.value
+      });
+
+      const response = await new Promise<any>((resolve, reject) => {
+        const reqOptions = {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${anonKey}`,
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(body)
+          }
+        };
+
+        const req = https.request(url, reqOptions, (res) => {
+          let data = '';
+          
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+          
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              if (res.statusCode === 200) {
+                resolve(parsed);
+              } else {
+                reject(new Error(parsed.error || `HTTP ${res.statusCode}`));
+              }
+            } catch (e) {
+              reject(new Error(`Failed to parse response: ${data}`));
+            }
+          });
+        });
+
+        req.on('error', reject);
+        req.write(body);
+        req.end();
+      });
+      
+      if (response.success) {
+        console.log(`✅ Secret created successfully for key: ${options.key}`);
+      } else if (response.error) {
+        console.error(`Error: ${response.error}`);
+      } else {
+        console.error('Unexpected response format:', response);
+      }
+    } catch (err) {
+      const error = err as Error;
+      console.error('❌ Failed to create vault secret:', error.message);
+      process.exit(1);
+    }
+  }
+
+  private async deleteVaultSecret(key: string, options: VaultOptions): Promise<void> {
+    const projectRef = 
+      options.projectRef || process.env.SUPABASE_PROJECT_REF || process.env.SUPABASE_REF;
+    const anonKey = 
+      options.anonKey || process.env.SUPABASE_ANON_KEY;
+
+    if (!projectRef) {
+      console.error('Error: project ref missing (set $SUPABASE_PROJECT_REF or pass --project-ref)');
+      process.exit(1);
+    }
+    if (!anonKey) {
+      console.error('Error: anon key missing (set $SUPABASE_ANON_KEY or pass --anon-key)');
+      process.exit(1);
+    }
+
+    try {
+      console.log(`🔐 Deleting secret with key: ${key}\n`);
+      
+      const url = `https://${projectRef}.supabase.co/functions/v1/vault-secrets-deleter`;
+      const body = JSON.stringify({ 
+        action: 'delete',
+        key: key
+      });
+
+      const response = await new Promise<any>((resolve, reject) => {
+        const reqOptions = {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${anonKey}`,
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(body)
+          }
+        };
+
+        const req = https.request(url, reqOptions, (res) => {
+          let data = '';
+          
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+          
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              if (res.statusCode === 200) {
+                resolve(parsed);
+              } else {
+                reject(new Error(parsed.error || `HTTP ${res.statusCode}`));
+              }
+            } catch (e) {
+              reject(new Error(`Failed to parse response: ${data}`));
+            }
+          });
+        });
+
+        req.on('error', reject);
+        req.write(body);
+        req.end();
+      });
+      
+      if (response.success) {
+        console.log(`✅ Secret deleted successfully for key: ${key}`);
+      } else if (response.error) {
+        console.error(`Error: ${response.error}`);
+      } else {
+        console.error('Unexpected response format:', response);
+      }
+    } catch (err) {
+      const error = err as Error;
+      console.error('❌ Failed to delete vault secret:', error.message);
+      process.exit(1);
+    }
+  }
+
+  private async deploySupabaseFunction(options: { name: string } & CheckFunctionsOptions): Promise<void> {
+    const accessToken = 
+      options.pat || process.env.SUPABASE_PAT || process.env.SUPABASE_ACCESS_TOKEN;
+    const ref = 
+      options.projectRef || process.env.SUPABASE_PROJECT_REF || process.env.SUPABASE_REF;
+
+    if (!accessToken) {
+      console.error('Error: Supabase PAT missing (set $SUPABASE_PAT or pass --pat)');
+      process.exit(1);
+    }
+    if (!ref) {
+      console.error('Error: project ref missing (set $SUPABASE_PROJECT_REF or pass --project-ref)');
+      process.exit(1);
+    }
+
+    try {
+      console.log(`🚀 Deploying Supabase Edge Function: ${options.name}\n`);
+      
+      // Deploy the function using Supabase CLI
+      const { stdout } = await execa(
+        'supabase',
+        ['functions', 'deploy', options.name, '--project-ref', ref],
+        { 
+          env: { ...process.env, SUPABASE_ACCESS_TOKEN: accessToken },
+          cwd: process.cwd()
+        }
+      );
+      console.log(stdout);
+      console.log(`\n✅ Function '${options.name}' deployed successfully!`);
+    } catch (err) {
+      const error = err as Error & { stderr?: string };
+      console.error('❌ Supabase CLI deploy failed:', error.message);
+      if (error.stderr) {
+        console.error('Details:', error.stderr);
+      }
       process.exit(1);
     }
   }
