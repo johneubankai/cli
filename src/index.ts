@@ -12,10 +12,6 @@ import {
   VercelLogsCommand,
   VercelListCommand,
   VercelBuildCommand,
-  VercelEnvListCommand,
-  VercelEnvAddCommand,
-  VercelEnvRemoveCommand,
-  VercelEnvPullCommand,
   SlackServiceLoginCommand,
   VercelServiceLoginCommand,
   SupabaseLoginCommand,
@@ -85,11 +81,6 @@ const commands = [
   new VercelLogsCommand(),
   new VercelListCommand(),
   new VercelBuildCommand(),
-  // Vercel env subcommands
-  new VercelEnvListCommand(),
-  new VercelEnvAddCommand(),
-  new VercelEnvRemoveCommand(),
-  new VercelEnvPullCommand(),
   // Service login commands
   new SlackServiceLoginCommand(),
   new VercelServiceLoginCommand(),
