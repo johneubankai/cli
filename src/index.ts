@@ -53,11 +53,11 @@ class CLI {
   private greet(name: string, options: GreetOptions): void {
     let greeting = `Hello, ${name}!`;
     
-    if (options.uppercase) {
+    if (options.uppercase === true) {
       greeting = greeting.toUpperCase();
     }
     
-    if (options.exclamation) {
+    if (options.exclamation === true) {
       greeting = greeting.replace('!', '!!!');
     }
     
