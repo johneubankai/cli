@@ -4,7 +4,9 @@ A TypeScript-based CLI tool with super-charged helpers for development projects,
 
 ## Features
 
-- **Supabase Integration**: Check and list deployed Edge Functions
+- **Supabase Vault Integration**: Securely list and retrieve secrets from Supabase Vault
+- **Supabase Functions Management**: Check and list deployed Edge Functions
+- **Security First**: Vault secrets are masked by default and copied to clipboard
 - **TypeScript**: Fully typed with strict configuration
 - **Commander.js**: Elegant command parsing with nested sub-commands
 - **ESLint**: Code quality enforcement
@@ -31,6 +33,30 @@ npm install -g @johneubankai/jx-cli
 ```
 
 ## Commands
+
+### Supabase Vault Management
+
+List all available keys in your Supabase vault:
+
+```bash
+# Using environment variables
+export SUPABASE_ANON_KEY="your-anon-key"
+export SUPABASE_PROJECT_REF="your-project-ref"
+jx vault list
+
+# Using command flags
+jx vault list --anon-key "your-key" --project-ref "your-ref"
+```
+
+Get a specific secret value (masked by default for security):
+
+```bash
+# Get masked value (copied to clipboard automatically)
+jx vault get API_KEY
+
+# Show full value (use with caution!)
+jx vault get API_KEY --show
+```
 
 ### Supabase Functions
 
@@ -68,8 +94,9 @@ jx check --help
 
 For Supabase integration:
 
-- `SUPABASE_PAT` or `SUPABASE_ACCESS_TOKEN`: Your Supabase personal access token
+- `SUPABASE_PAT` or `SUPABASE_ACCESS_TOKEN`: Your Supabase personal access token (for CLI operations)
 - `SUPABASE_PROJECT_REF` or `SUPABASE_REF`: Your Supabase project reference
+- `SUPABASE_ANON_KEY`: Your Supabase anon key (for vault operations)
 
 ## Development
 

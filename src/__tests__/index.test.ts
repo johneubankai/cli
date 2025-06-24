@@ -72,6 +72,7 @@ describe('JX CLI', () => {
       expect(output).toContain('Usage:');
       expect(output).toContain('Commands:');
       expect(output).toContain('check');
+      expect(output).toContain('vault');
       expect(output).toContain('hello');
       expect(output).toContain('goodbye');
     });
@@ -80,6 +81,30 @@ describe('JX CLI', () => {
       const output = execSync(`node ${cliPath} check --help`).toString();
       expect(output).toContain('Commands:');
       expect(output).toContain('functions');
+    });
+  });
+
+  describe('vault commands', () => {
+    it('should error when anon key is missing for vault list', () => {
+      expect(() => {
+        execSync(`node ${cliPath} vault list`, {
+          env: { ...process.env, SUPABASE_ANON_KEY: '' }
+        });
+      }).toThrow();
+    });
+
+    it('should error when project ref is missing for vault list', () => {
+      expect(() => {
+        execSync(`node ${cliPath} vault list --anon-key test-key`, {
+          env: { ...process.env, SUPABASE_PROJECT_REF: '', SUPABASE_REF: '' }
+        });
+      }).toThrow();
+    });
+
+    it('should accept anon key via flag for vault get', () => {
+      expect(() => {
+        execSync(`node ${cliPath} vault get TEST_KEY --anon-key test-key --project-ref test-ref`);
+      }).toThrow(/Failed to get vault secret/i); // Will fail due to invalid credentials
     });
   });
 });
