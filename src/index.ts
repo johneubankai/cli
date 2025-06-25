@@ -54,6 +54,7 @@ import {
   SbFunctionsCommand,
   NewCommand,
   NewTaskCommand,
+  DebugTasksCommand,
 } from './commands';
 
 const program = new Command();
@@ -134,6 +135,7 @@ const commands = [
   // New commands
   new NewCommand(),
   new NewTaskCommand(),
+  new DebugTasksCommand(),
 ];
 
 commands.forEach((command) => command.register(program));
