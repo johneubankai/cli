@@ -36,3 +36,6 @@ export * from './check';
 
 // Vault commands
 export * from './vault';
+
+// New commands
+export * from './new';

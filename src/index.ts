@@ -52,6 +52,8 @@ import {
   SbLinkCommand,
   SbDbCommand,
   SbFunctionsCommand,
+  NewCommand,
+  NewTaskCommand,
 } from './commands';
 
 const program = new Command();
@@ -129,6 +131,9 @@ const commands = [
   new SbLinkCommand(),
   new SbDbCommand(),
   new SbFunctionsCommand(),
+  // New commands
+  new NewCommand(),
+  new NewTaskCommand(),
 ];
 
 commands.forEach((command) => command.register(program));
